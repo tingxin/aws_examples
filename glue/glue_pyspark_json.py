@@ -18,7 +18,7 @@ job.init(args['JOB_NAME'], args)
 order_items_ds = glueContext.create_dynamic_frame.from_options(
     format_options={"jsonPath": "$[0][*]", "multiline": True},
     connection_type="s3", format="json", connection_options={
-        "paths": ["s3://mcc-temp-datasource/mcc-temp-order-items/"], "recurse": True},
+        "paths": ["s3://mcc-data-stage2/order_items/"], "recurse": True},
     transformation_ctx="order_items_ds")
 
 order_items_df = order_items_ds.toDF()
@@ -33,7 +33,7 @@ order_items_df = order_items_df.drop("item")
 order_address_ds = glueContext.create_dynamic_frame.from_options(
     format_options={"jsonPath": "$[0][*]", "multiline": True},
     connection_type="s3", format="json", connection_options={
-        "paths": ["s3://mcc-temp-datasource/mcc-temp-order-address/"], "recurse": True},
+        "paths": ["s3://mcc-data-stage2/order_address/"], "recurse": True},
     transformation_ctx="order_address_ds")
 
 order_address_df = order_address_ds.toDF()
@@ -44,18 +44,31 @@ order_address_df = order_address_df.drop("shippingAddress")
 order_buyer_info_ds = glueContext.create_dynamic_frame.from_options(
     format_options={"jsonPath": "$[0][*]", "multiline": True},
     connection_type="s3", format="json", connection_options={
-        "paths": ["s3://mcc-temp-datasource/order-buyer/"], "recurse": True},
+        "paths": ["s3://mcc-data-stage2/order_buyer_info/"], "recurse": True},
     transformation_ctx="order_buyer_info_ds")
 
 order_buyer_info_df = order_buyer_info_ds.toDF()
 order_buyer_info_df = order_buyer_info_df.select("amazonOrderId", "buyerEmail")
 
+order_info_ds = glueContext.create_dynamic_frame.from_options(
+    format_options={"jsonPath": "$[*]", "multiline": True},
+    connection_type="s3", format="json", connection_options={
+        "paths": ["s3://mcc-data-stage2/orders/"], "recurse": True},
+    transformation_ctx="order_info_ds")
+
+order_info_df = order_info_ds.toDF()
+order_info_df = order_info_df.select("amazonOrderId", "lastUpdateDate", "orderStatus")
+
 df = order_items_df.join(order_address_df, "amazonOrderId", how="left")
 df = df.join(order_buyer_info_df, "amazonOrderId", how="left")
+df = df.join(order_info_df, "amazonOrderId", how="left")
+
+df = df.select("amazonOrderId", "buyerEmail", "countryCode", "city",
+               "lastUpdateDate", "orderStatus", "SKU", "orderItemId", "quantity", "price")
 
 dyn_df = DynamicFrame.fromDF(df, glueContext, "nested")
 sink0 = glueContext.write_dynamic_frame.from_options(frame=dyn_df, connection_type="s3", format="json",
                                                      connection_options={
-                                                         "path": "s3://mcc-temp-output/join_test/",
+                                                         "path": "s3://mcc-data-stage2/model_order/",
                                                          "partitionKeys": []}, transformation_ctx="sink0")
 job.commit()
