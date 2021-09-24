@@ -35,8 +35,9 @@ order_address_df = spark.read.option("multiLine", "true").json(
 order_address_df = order_address_df.withColumn("countryCode", F.col("shippingAddress.countryCode"))
 order_address_df = order_address_df.withColumn("city", F.col("shippingAddress.city"))
 order_address_df = order_address_df.drop("shippingAddress")
-
 print(order_address_df.count())
+t = order_address_df.dropDuplicates()
+print(t.count())
 
 order_buyer_info_df = spark.read.option("multiLine", "true").json(
     '/Users/fugui/Work/NWCD/mcc/data/local/order_buyer_info.json')
@@ -51,6 +52,7 @@ order_info_df = spark.read.option("multiLine", "true").json(
 order_info_df = order_info_df.select("amazonOrderId", "lastUpdateDate", "orderStatus")
 
 df = order_items_df.join(order_address_df, "amazonOrderId", how="left")
+df = df.dropDuplicates()
 df = df.join(order_buyer_info_df, "amazonOrderId", how="left")
 df = df.join(order_info_df, "amazonOrderId", how="left")
 df = df.withColumn("order_date", extract_date(F.col("lastUpdateDate")))

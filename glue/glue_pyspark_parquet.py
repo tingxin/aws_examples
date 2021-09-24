@@ -74,21 +74,26 @@ order_info_ds = glueContext.create_dynamic_frame.from_options(
 
 order_info_df = order_info_ds.toDF()
 print("check order_info_df code: {0}".format(order_info_df.count()))
-order_info_df = order_info_df.select("amazonOrderId", "lastUpdateDate", "orderStatus")
+order_info_df = order_info_df.select("amazonOrderId", "purchaseDate", "orderStatus")
 print("check order_info_df code: {0}".format(order_info_df.count()))
 
 df = order_items_df.join(order_address_df, "amazonOrderId", how="left")
+df = df.dropDuplicates()
 df = df.join(order_buyer_info_df, "amazonOrderId", how="left")
+df = df.dropDuplicates()
 df = df.join(order_info_df, "amazonOrderId", how="left")
-df = df.withColumn("order_date", extract_date(F.col("lastUpdateDate")))
+df = df.dropDuplicates()
+
+df = df.withColumn("order_date", extract_date(F.col("purchaseDate")))
+
 print("check df code: {0}".format(df.count()))
 
 df = df.select("amazonOrderId", "buyerEmail", "countryCode", "city", "order_date",
-               "lastUpdateDate", "orderStatus", "SKU", "orderItemId", "quantity", "price")
+               "purchaseDate", "orderStatus", "SKU", "orderItemId", "quantity", "price")
 
 dyn_df = DynamicFrame.fromDF(df, glueContext, "nested")
 sink0 = glueContext.write_dynamic_frame.from_options(frame=dyn_df, connection_type="s3", format="parquet",
                                                      connection_options={
-                                                         "path": "s3://temp-dev-test-order/log-order/",
+                                                         "path": "s3://mcc-data-stage-output/order_metrics/",
                                                          "partitionKeys": ["order_date"]}, transformation_ctx="sink0")
 job.commit()
