@@ -41,8 +41,8 @@ spark = SparkSession.builder.getOrCreate()
 file_path = '/Users/fugui/Work/github.com/tingxin/mcc/resource/elastic_post1.json'
 log_df = spark.read.option("multiLine", "true").json(file_path)
 
-fields_df = log_df.filter("fields is not null").select("fields")
-
+fields_df = log_df.filter("fields is not null").select("fields.*")
+fields_df = fields_df.toDF(*(c.replace('.', '_') for c in fields_df.columns))
 fields_df.printSchema()
 focus_column_names = ["log_timestamp", "log_user", "code", "message", "method", "service_name", "event_description",
                       "log_url",
@@ -51,7 +51,7 @@ focus_column_names = ["log_timestamp", "log_user", "code", "message", "method", 
 focus_df = fields_df
 for item in focus_column_names:
     if focus_df:
-        focus_df = focus_df.withColumn(item, extract_array(F.col(f"fields.{item}")))
+        focus_df = focus_df.withColumn(item, extract_array(F.col(f"{item}")))
 
 focus_df = focus_df.select(*focus_column_names)
 focus_df.show()
