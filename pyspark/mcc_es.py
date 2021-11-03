@@ -18,6 +18,14 @@ def extract_array(input_array):
     return input_array
 
 
+@udf(returnType=StringType())
+def extract_message(message_str):
+    if message_str:
+        t = message_str.index("url=")
+        return message_str[t + 4:]
+    return message_str
+
+
 post_data_destinationAddress_schema = StructType([
     StructField("name", StringType()),
     StructField("line1", StringType()),
@@ -44,19 +52,17 @@ log_df = spark.read.option("multiLine", "true").json(file_path)
 fields_df = log_df.filter("fields is not null").select("fields.*")
 fields_df = fields_df.toDF(*(c.replace('.', '_') for c in fields_df.columns))
 fields_df.printSchema()
-focus_column_names = ["log_timestamp", "log_user", "code", "message", "method", "service_name", "event_description",
-                      "log_url",
-                      "postData"]
+focus_column_names = ["log_timestamp", "log_user", "fields_log_type", "method", "hostname", "@timestamp",
+                      "log_url", "request_id", "message", "postData"]
 
 focus_df = fields_df
 for item in focus_column_names:
     if focus_df:
-        focus_df = focus_df.withColumn(item, extract_array(F.col(f"{item}")))
+        key = item[1:] if item.startswith("@") else item
+        focus_df = focus_df.withColumn(key, extract_array(focus_df[item]))
+
+# focus_df = focus_df.withColumn("message", extract_message(F.col("message")))
 
 focus_df = focus_df.select(*focus_column_names)
-focus_df.show()
 focus_df.printSchema()
 # focus_df = focus_df.withColumn("postData", F.from_json(F.col("postData"), post_data_schema))
-postData = focus_df.select("postData")
-postData.show()
-postData.printSchema()
