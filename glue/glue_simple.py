@@ -63,31 +63,16 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
 es_ds = glueContext.create_dynamic_frame.from_options(
-    format_options={"multiline": False},
-    connection_type="s3",
-    format="json",
-    connection_options={"paths": ["s3://mcc2/es_input/"], "recurse": True},
-    transformation_ctx="S3bucket_node1",
-)
+    format_options={"jsonPath": "$", "multiline": True},
+    connection_type="s3", format="json", connection_options={
+        "paths": ["s3://mcc2/es_input/"], "recurse": True},
+    transformation_ctx="mcc2_ds")
 
 es_df = es_ds.toDF()
 
-fields_df = es_df.filter("fields is not null").select("fields.*")
-fields_df = fields_df.toDF(*(c.replace('.', '_') for c in fields_df.columns))
+es_df.show()
 
-focus_column_names = ["log_timestamp", "log_user", "fields_log_type", "method", "hostname", "@timestamp",
-                      "log_url", "request_id", "message", "postData"]
-
-focus_df = fields_df
-for item in focus_column_names:
-    if focus_df:
-        focus_df = focus_df.withColumn(item, extract_array(focus_df[item]))
-
-focus_df = focus_df.select(*focus_column_names)
-
-focus_df = focus_df.withColumn("postData", F.from_json(F.col("postData"), post_data_schema))
-
-dyn_df = DynamicFrame.fromDF(focus_df, glueContext, "nested")
+dyn_df = DynamicFrame.fromDF(es_df, glueContext, "nested")
 sink0 = glueContext.write_dynamic_frame.from_options(frame=dyn_df, connection_type="s3", format="json",
                                                      connection_options={
                                                          "path": "s3://mcc2/es_output/",

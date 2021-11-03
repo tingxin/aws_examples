@@ -59,7 +59,7 @@ log_df = spark.read.option("multiLine", "true").json(file_path)
 
 fields_df = log_df.filter("fields is not null").select("fields.*")
 fields_df = fields_df.toDF(*(c.replace('.', '_') for c in fields_df.columns))
-fields_df.printSchema()
+
 focus_column_names = ["log_timestamp", "log_user", "fields_log_type", "method", "hostname", "@timestamp",
                       "log_url", "request_id", "message", "postData"]
 
@@ -73,5 +73,5 @@ for item in focus_column_names:
 focus_df = focus_df.select(*focus_column_names)
 
 focus_df = focus_df.withColumn("postData", F.from_json(F.col("postData"), post_data_schema))
-focus_df.printSchema()
-focus_df.show()
+focus_df.coalesce(1).write.format('json').save('output.json')
+
