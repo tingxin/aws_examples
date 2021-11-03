@@ -5,7 +5,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.functions import udf
-from pyspark.sql.types import StringType, ArrayType, StructType, StructField, BooleanType
+from pyspark.sql.types import StringType, ArrayType, StructType, StructField, BooleanType, IntegerType
 from datetime import datetime, date
 import pandas as pd
 import json
@@ -36,9 +36,17 @@ post_data_destinationAddress_schema = StructType([
     StructField("postalCode", StringType())]
 
 )
+
+items_schema = StructType([
+    StructField("merchantSku", StringType()),
+    StructField("asin", StringType()),
+    StructField("fnSku", StringType()),
+    StructField("quantity", IntegerType()),
+    StructField("referenceItemId", StringType()),
+])
 post_data_schema = StructType([
-    StructField("destinationAddress", StructType()),
-    StructField("items", ArrayType(StructType())),
+    StructField("destinationAddress", post_data_destinationAddress_schema),
+    StructField("items", ArrayType(items_schema)),
     StructField("shouldIncludeCOD", BooleanType()),
     StructField("shouldIncludeDeliveryWindows", BooleanType()),
     StructField("isBlankBoxRequired", BooleanType()),
@@ -58,11 +66,12 @@ focus_column_names = ["log_timestamp", "log_user", "fields_log_type", "method", 
 focus_df = fields_df
 for item in focus_column_names:
     if focus_df:
-        key = item[1:] if item.startswith("@") else item
-        focus_df = focus_df.withColumn(key, extract_array(focus_df[item]))
+        focus_df = focus_df.withColumn(item, extract_array(focus_df[item]))
 
 # focus_df = focus_df.withColumn("message", extract_message(F.col("message")))
 
 focus_df = focus_df.select(*focus_column_names)
+
+focus_df = focus_df.withColumn("postData", F.from_json(F.col("postData"), post_data_schema))
 focus_df.printSchema()
-# focus_df = focus_df.withColumn("postData", F.from_json(F.col("postData"), post_data_schema))
+focus_df.show()
