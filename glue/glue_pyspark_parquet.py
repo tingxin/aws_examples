@@ -26,12 +26,13 @@ def extract_date(str_date):
 
 
 order_items_ds = glueContext.create_dynamic_frame.from_options(
-    format_options={"jsonPath": "$[0][*]", "multiline": True},
+    format_options={"jsonPath": "$[*]", "multiline": True},
     connection_type="s3", format="json", connection_options={
         "paths": ["s3://mcc-data-stage2/order_items/"], "recurse": True},
     transformation_ctx="order_items_ds")
 
 order_items_df = order_items_ds.toDF()
+
 print("check order_items_df code: {0}".format(order_items_df.count()))
 order_items_df = order_items_df.withColumn("item", F.explode(F.col('orderItems')))
 order_items_df = order_items_df.drop("orderItems", "nextToken")
@@ -43,7 +44,7 @@ order_items_df = order_items_df.drop("item")
 print("check order_items_df code: {0}".format(order_items_df.count()))
 
 order_address_ds = glueContext.create_dynamic_frame.from_options(
-    format_options={"jsonPath": "$[0][*]", "multiline": True},
+    format_options={"jsonPath": "$[*]", "multiline": True},
     connection_type="s3", format="json", connection_options={
         "paths": ["s3://mcc-data-stage2/order_address/"], "recurse": True},
     transformation_ctx="order_address_ds")
@@ -56,7 +57,7 @@ order_address_df = order_address_df.drop("shippingAddress")
 print("check order_address_df code: {0}".format(order_address_df.count()))
 
 order_buyer_info_ds = glueContext.create_dynamic_frame.from_options(
-    format_options={"jsonPath": "$[0][*]", "multiline": True},
+    format_options={"jsonPath": "$[*]", "multiline": True},
     connection_type="s3", format="json", connection_options={
         "paths": ["s3://mcc-data-stage2/order_buyer_info/"], "recurse": True},
     transformation_ctx="order_buyer_info_ds")
@@ -94,6 +95,6 @@ df = df.select("amazonOrderId", "buyerEmail", "countryCode", "city", "order_date
 dyn_df = DynamicFrame.fromDF(df, glueContext, "nested")
 sink0 = glueContext.write_dynamic_frame.from_options(frame=dyn_df, connection_type="s3", format="parquet",
                                                      connection_options={
-                                                         "path": "s3://mcc-data-stage-output/order_metrics/",
+                                                         "path": "s3://rep-mcc-data-analysis-stage/order_rep_demo/",
                                                          "partitionKeys": ["order_date"]}, transformation_ctx="sink0")
 job.commit()

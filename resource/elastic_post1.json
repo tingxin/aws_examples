@@ -1,0 +1,92 @@
+{
+  "_index": "app-core-info-log-2021.10.22",
+  "_type": "_doc",
+  "_id": "xgCMpnwBI0SNwG0hrzEM",
+  "_version": 1,
+  "_score": null,
+  "fields": {
+    "log_timestamp": [
+      "2021-10-22T05:50:08.563Z"
+    ],
+    "headers": [
+      "sec-fetch-mode:::cors|||referer:::https://sellercentral.amazon.com/mcf/orders/create-order?ref=xx_fbastod_cont_myifba&mSku.0=US202102015-sj&asin.0=B08W29L11M&fnSku.0=B08W29L11M&cancelURL=/inventory|||sec-fetch-site:::same-origin|||accept-language:::zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2|||upgrade-insecure-requests:::1|||connection:::close|||sec-fetch-user:::?1|||accept-encoding:::gzip, deflate, br|||user-agent:::Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36|||sec-fetch-dest:::empty|||accept:::application/json, text/plain, */*|||content-type:::application/json;charset=utf-8|||anti-csrftoken-a2z:::g/bMdj9OUDIRICps2VXmh6eJ0uMWl8Atj0nanVygCH3AAAAAAQAAAABhclD6cmF3AAAAAAQRVn0AH9rqj+J7iwqojA==|||anti-csrftoken-a2z-request:::true|||origin:::https://sellercentral.amazon.com|||host:::sellercentral.amazon.com"
+    ],
+    "log_user": [
+      "chenjie"
+    ],
+    "fields.log_type.keyword": [
+      "core-info-log"
+    ],
+    "code": [
+      "200"
+    ],
+    "input.type.keyword": [
+      "log"
+    ],
+    "fields.log_type": [
+      "core-info-log"
+    ],
+    "method": [
+      "POST"
+    ],
+    "service_name": [
+      "cn1407us"
+    ],
+    "event_description": [
+      "endRequest"
+    ],
+    "log_level": [
+      "INFO"
+    ],
+    "input.type": [
+      "log"
+    ],
+    "log.offset": [
+      277625
+    ],
+    "thread": [
+      "http-nio-8080-exec-12"
+    ],
+    "message": [
+      "2021-10-22 05:50:08,563 INFO  hostname=i-022fe99883d2ae337 class=c.f.s.controller.ComonBase thread=http-nio-8080-exec-12 request_id=d2410bff-2181-40e1-b61f-bbb09f446b23 user=chenjie typo= service_name=cn1407us url=https://sellercentral.amazon.com/mcf/api/GetOrderPreview?sif_profile=ShipmentInjectionOrders-NA method=POST contentType=application/json;charset=utf-8 postData={\"destinationAddress\":{\"name\":\"Nam Pham\",\"line1\":\"An den Linden 35\",\"line2\":\"line2\",\"city\":\"city\",\"state\":\"\",\"countryCode\":\"DE\",\"postalCode\":\"97230\"},\"items\":[{\"merchantSku\":\"US202102015-sj\",\"asin\":\"B08W29L11M\",\"fnSku\":\"B08W29L11M\",\"quantity\":1,\"referenceItemId\":\"CONSUMER-20211022-5507-0\"}],\"shouldIncludeCOD\":false,\"shouldIncludeDeliveryWindows\":false,\"isBlankBoxRequired\":false,\"blockAMZL\":false} headers=sec-fetch-mode:::cors|||referer:::https://sellercentral.amazon.com/mcf/orders/create-order?ref=xx_fbastod_cont_myifba&mSku.0=US202102015-sj&asin.0=B08W29L11M&fnSku.0=B08W29L11M&cancelURL=/inventory|||sec-fetch-site:::same-origin|||accept-language:::zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2|||upgrade-insecure-requests:::1|||connection:::close|||sec-fetch-user:::?1|||accept-encoding:::gzip, deflate, br|||user-agent:::Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36|||sec-fetch-dest:::empty|||accept:::application/json, text/plain, */*|||content-type:::application/json;charset=utf-8|||anti-csrftoken-a2z:::g/bMdj9OUDIRICps2VXmh6eJ0uMWl8Atj0nanVygCH3AAAAAAQAAAABhclD6cmF3AAAAAAQRVn0AH9rqj+J7iwqojA==|||anti-csrftoken-a2z-request:::true|||origin:::https://sellercentral.amazon.com|||host:::sellercentral.amazon.com code=200 event_description=\"endRequest\""
+    ],
+    "hostname": [
+      "i-022fe99883d2ae337"
+    ],
+    "typo": [
+      ""
+    ],
+    "@timestamp": [
+      "2021-10-22T05:50:09.187Z"
+    ],
+    "log_url": [
+      "https://sellercentral.amazon.com/mcf/api/GetOrderPreview?sif_profile=ShipmentInjectionOrders-NA"
+    ],
+    "log.file.path": [
+      "/var/log/app/info/info.2021-10-22.log"
+    ],
+    "contentType": [
+      "application/json;charset=utf-8"
+    ],
+    "class": [
+      "c.f.s.controller.ComonBase"
+    ],
+    "request_id": [
+      "d2410bff-2181-40e1-b61f-bbb09f446b23"
+    ],
+    "postData": [
+      "{\"destinationAddress\":{\"name\":\"Nam Pham\",\"line1\":\"An den Linden 35\",\"line2\":\"line2\",\"city\":\"city\",\"state\":\"\",\"countryCode\":\"DE\",\"postalCode\":\"97230\"},\"items\":[{\"merchantSku\":\"US202102015-sj\",\"asin\":\"B08W29L11M\",\"fnSku\":\"B08W29L11M\",\"quantity\":1,\"referenceItemId\":\"CONSUMER-20211022-5507-0\"}],\"shouldIncludeCOD\":false,\"shouldIncludeDeliveryWindows\":false,\"isBlankBoxRequired\":false,\"blockAMZL\":false}"
+    ]
+  },
+  "highlight": {
+    "method": [
+      "@kibana-highlighted-field@POST@/kibana-highlighted-field@"
+    ],
+    "message": [
+      "sif_profile=ShipmentInjectionOrders-NA method=POST contentType=application/json;charset=utf-8 postData={\"@kibana-highlighted-field@destinationAddress@/kibana-highlighted-field@\":{\"name\":\"Nam Pham\",\"line1\":\"An den Linden 35\",\"line2\":\"line2\",\"city\":\"city\",\"state\":\"\",\"countryCode\":\"DE\",\"postalCode\":\"97230\"},\"items\":[{\"merchantSku\":\"US202102015-sj\",\"asin\":\"B08W29L11M\",\"fnSku\":\"B08W29L11M\",\"quantity\":1,\"referenceItemId\":\"CONSUMER-20211022-5507-0\"}],\"shouldIncludeCOD\":false,\"shouldIncludeDeliveryWindows\":false,\"isBlankBoxRequired\":false,\"blockAMZL\":false} headers=sec-fetch-mode:::cors|||referer:::https://sellercentral.amazon.com/mcf/orders/create-order?ref=xx_fbastod_cont_myifba&mSku.0=US202102015-sj&asin.0=B08W29L11M&fnSku.0=B08W29L11M&cancelURL=/inventory|||sec-fetch-site:::same-origin|||accept-language:::zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2|||upgrade-insecure-requests:::1|||connection:::close|||sec-fetch-user:::?1|||accept-encoding:::gzip, deflate, br|||user-agent:::Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36|||sec-fetch-dest:::empty|||accept:::application/json, text/plain, */*|||content-type:::application/json;charset=utf-8|||anti-csrftoken-a2z:::g/bMdj9OUDIRICps2VXmh6eJ0uMWl8Atj0nanVygCH3AAAAAAQAAAABhclD6cmF3AAAAAAQRVn0AH9rqj+J7iwqojA==|||anti-csrftoken-a2z-request:::true|||origin:::https://sellercentral.amazon.com|||host:::sellercentral.amazon.com code=200 event_description=\"endRequest\""
+    ]
+  },
+  "sort": [
+    1634881809187
+  ]
+}

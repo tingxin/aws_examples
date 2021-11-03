@@ -8,7 +8,6 @@ from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
 from datetime import datetime, date
 import pandas as pd
-import json
 
 
 @udf(returnType=StringType())
@@ -19,8 +18,7 @@ def extract_date(str_date):
 
 
 spark = SparkSession.builder.getOrCreate()
-
-order_items_df = spark.read.option("multiLine", "true").json('/Users/fugui/Work/NWCD/mcc/data/local/order_items.json')
+order_items_df = spark.read.option("multiLine", "true").json('/Users/fugui/Work/NWCD/mcc/data/newschema/order_items.json')
 order_items_df = order_items_df.filter("orderItems is not null")
 order_items_df = order_items_df.withColumn("item", F.explode(F.col('orderItems')))
 order_items_df = order_items_df.drop("orderItems", "nextToken")
@@ -32,7 +30,7 @@ order_items_df = order_items_df.drop("item")
 print(order_items_df.count())
 
 order_address_df = spark.read.option("multiLine", "true").json(
-    '/Users/fugui/Work/NWCD/mcc/data/local/order_address1.json')
+    '/Users/fugui/Work/NWCD/mcc/data/newschema/order_address.json')
 
 order_address_df = order_address_df.withColumn("countryCode", F.col("shippingAddress.countryCode"))
 order_address_df = order_address_df.withColumn("city", F.col("shippingAddress.city"))
@@ -42,23 +40,23 @@ t = order_address_df.dropDuplicates()
 print(t.count())
 
 order_buyer_info_df = spark.read.option("multiLine", "true").json(
-    '/Users/fugui/Work/NWCD/mcc/data/local/order_buyer_info.json')
+    '/Users/fugui/Work/NWCD/mcc/data/newschema/buyer_info.json')
 
 order_buyer_info_df.printSchema()
 order_buyer_info_df = order_buyer_info_df.select("amazonOrderId", "buyerEmail")
 print(order_address_df.count())
 
 order_info_df = spark.read.option("multiLine", "true").json(
-    '/Users/fugui/Work/NWCD/mcc/data/local/orders.json')
+    '/Users/fugui/Work/NWCD/mcc/data/newschema/orders.json')
 
-order_info_df = order_info_df.select("amazonOrderId", "lastUpdateDate", "orderStatus")
+order_info_df = order_info_df.select("amazonOrderId", "purchaseDate", "orderStatus")
 
 df = order_items_df.join(order_address_df, "amazonOrderId", how="left")
 df = df.dropDuplicates()
 df = df.join(order_buyer_info_df, "amazonOrderId", how="left")
 df = df.join(order_info_df, "amazonOrderId", how="left")
-df = df.withColumn("order_date", extract_date(F.col("lastUpdateDate")))
+df = df.withColumn("order_date", extract_date(F.col("purchaseDate")))
 df = df.select("amazonOrderId", "buyerEmail", "countryCode", "city","order_date",
-               "lastUpdateDate", "orderStatus", "SKU", "orderItemId", "quantity", "price")
+               "purchaseDate", "orderStatus", "SKU", "orderItemId", "quantity", "price")
 
 df.show(10)
