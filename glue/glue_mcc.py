@@ -62,11 +62,12 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
+
 es_ds = glueContext.create_dynamic_frame.from_options(
-    format_options={"multiline": False},
+    format_options={"multiline": True},
     connection_type="s3",
     format="json",
-    connection_options={"paths": ["s3://mcc2/es_input/"], "recurse": True},
+    connection_options={"paths": ["s3://example-data/mcc2_input3/"], "recurse": True},
     transformation_ctx="S3bucket_node1",
 )
 

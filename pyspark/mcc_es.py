@@ -54,24 +54,27 @@ post_data_schema = StructType([
 ])
 
 spark = SparkSession.builder.getOrCreate()
-file_path = '/Users/fugui/Work/github.com/tingxin/mcc/resource/elastic_post1.json'
+file_path = '/Users/fugui/Work/github.com/tingxin/mcc/resource/tt.json'
 log_df = spark.read.option("multiLine", "true").json(file_path)
 
 fields_df = log_df.filter("fields is not null").select("fields.*")
 fields_df = fields_df.toDF(*(c.replace('.', '_') for c in fields_df.columns))
 
+
 focus_column_names = ["log_timestamp", "log_user", "fields_log_type", "method", "hostname", "@timestamp",
                       "log_url", "request_id", "message", "postData"]
 
 focus_df = fields_df
+focus_df.printSchema()
 for item in focus_column_names:
     if focus_df:
         focus_df = focus_df.withColumn(item, extract_array(focus_df[item]))
 
-# focus_df = focus_df.withColumn("message", extract_message(F.col("message")))
+focus_df = focus_df.withColumn("message", extract_message(F.col("message")))
 
 focus_df = focus_df.select(*focus_column_names)
 
-focus_df = focus_df.withColumn("postData", F.from_json(F.col("postData"), post_data_schema))
+# focus_api = ["https://sellercentral.amazon.com/mcf/api/SearchListings"]
+# focus_df = focus_df.withColumn("postData", F.from_json(F.col("postData"), post_data_schema))
 focus_df.coalesce(1).write.format('json').save('output.json')
 
