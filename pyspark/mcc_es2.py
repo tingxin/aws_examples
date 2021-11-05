@@ -36,18 +36,23 @@ data_schema = StructType([
 ])
 
 spark = SparkSession.builder.getOrCreate()
-file_path = '/Users/fugui/Work/github.com/tingxin/mcc/resource/tt.json'
-es_df = spark.read.option("multiLine", "false").text(file_path)
+file_path = '/Users/fugui/Work/github.com/tingxin/mcc/resource/data2/*/*.txt'
+es_df = spark.read.format("text").option("multiLine", "false").text(file_path)
 
+es_df.printSchema()
 es_df = es_df.filter("value is not null")
+es_df = es_df.filter(F.col("value").contains("\"method\":\"POST\""))
 es_df = es_df.withColumn("data", F.from_json(F.col("value"), data_schema))
 es_df = es_df.select("data.*")
+
+row_focus_column_names = ["log_timestamp", "log_user", "method", "hostname", "@timestamp",
+                          "log_url", "request_id", "fields", "message", "postData"]
+
+es_df = es_df.select(*row_focus_column_names)
 
 
 fields_df = es_df.filter("method is not null").filter(F.col("method") == "POST")
 fields_df = fields_df.filter(F.col("message") != "")
-
-
 
 focus_df = fields_df.withColumn("fields_log_type", F.col("fields.log_type"))
 focus_df = focus_df.withColumn("message", extract_message(F.col("message")))

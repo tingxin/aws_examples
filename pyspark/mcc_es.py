@@ -54,7 +54,7 @@ post_data_schema = StructType([
 ])
 
 spark = SparkSession.builder.getOrCreate()
-file_path = '/Users/fugui/Work/github.com/tingxin/mcc/resource/tt.json'
+file_path = '/resource/data/tt.json'
 log_df = spark.read.option("multiLine", "true").json(file_path)
 
 fields_df = log_df.filter("fields is not null").select("fields.*")

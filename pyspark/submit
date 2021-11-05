@@ -1,0 +1,4 @@
+/usr/bin/spark-submit \
+   --master yarn \
+   --deploy-mode cluster \
+   mcc_es.py
